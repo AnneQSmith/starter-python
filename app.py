@@ -70,7 +70,7 @@ def incoming_sms():
 @app.route('/incoming/call', methods=['GET', 'POST'])
 def incoming_call():
     response = twiml.Response()
-    with response.gather(numDigits=1, action="/incoming/gatherHandler") as g:
+    with response.gather(numDigits=1, action="/incoming/gather", method="POST") as g:
         g.say("Please enter 1 for customer service, 2 for sales") 
     return Response(str(response), mimetype='text/xml')
 
@@ -78,14 +78,18 @@ def incoming_call():
 def response():
     response = twiml.Response()
 
-    digit = int(request.form.get("Digits", request.args.get("Digits")))
+    # digit = request.form.get("Digits", request.args.get("Digits"))
+    digit = request.values.get('Digits', None)
 
-    if digit == 1:
-        response.say("Sorry our cusomer service is a joke")
-    elif digit == 2:
+    if digit == "1":
+        # response = twiml.Response()
+        response.say("Sorry our cuss-tomer service is a joke")
+        # return str(response)
+    elif digit == "2":
         response.say("You can't afford our products")
-    elif digit == 0:
+    elif digit == "0":
          response.dial('6505347648')
+         response.say("Did you really mean to hit 0?")
     return Response(str(response), mimetype='text/xml')
 
 
