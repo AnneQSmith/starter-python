@@ -55,6 +55,43 @@ def hello():
     response.say('Good luck on your Twilio quest!', voice='woman')
     return Response(str(response), mimetype='text/xml')
 
+@app.route('/incoming/sms')
+def incoming_sms():
+    response = twiml.Response()
+    response.sms("I just responded to a text message. Yeah!")
+    return Response(str(response), mimetype='text/xml') 
+
+# @app.route('/incoming/call')
+# def incoming_call():
+#     response = twiml.Response()
+#     response.say("I just responded to a voice message Yeah!")
+#     return Response(str(response), mimetype='text/xml') 
+
+@app.route('/incoming/call', methods=['GET', 'POST'])
+def incoming_call():
+    response = twiml.Response()
+    with response.gather(numDigits=1, action="/incoming/gatherHandler") as g:
+        g.say("Please enter 1 for customer service, 2 for sales") 
+    return Response(str(response), mimetype='text/xml')
+
+@app.route('/incoming/gather', methods = ['GET', "POST"])
+def response():
+    response = twiml.Response()
+
+    digit = int(request.form.get("Digits", request.args.get("Digits")))
+
+    if digit == 1:
+        response.say("Sorry our cusomer service is a joke")
+    elif digit == 2:
+        response.say("You can't afford our products")
+    elif digit == 0:
+         response.dial('6505347648')
+    return Response(str(response), mimetype='text/xml')
+
+
+
+
+
 if __name__ == '__main__':
     # Note that in production, you would want to disable debugging
     app.run(debug=True)
